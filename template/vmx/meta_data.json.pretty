@@ -1,0 +1,33 @@
+{
+    "admin_pass": "TUfDb7BtdUeY",
+    "availability_zone": "nova",
+    "files": [
+        {
+            "content_path": "/content/0000",
+            "path": "/var/db/cumulus/baseline_config.template"
+        }
+    ],
+    "hostname": "vmx",
+    "launch_index": 0,
+    "meta": {
+        "console": "vidconsole",
+        "gateway": "GATEWAY",
+        "hostname": "vmx",
+        "hw.pci.link.0x60.irq": "10",
+        "netmask": "NETMASK",
+        "re0_ip": "MGMT_IP",
+        "re1_ip": "128.0.0.1",
+        "vm_chassis_i2cid": "161",
+        "vm_chassisname": "vmx",
+        "vm_chassname": "vmx",
+        "vm_i2cid": "0xBAA",
+        "vm_instance": "0",
+        "vm_is_virtual": "1",
+        "vm_ore_present": "0",
+        "vm_retype": "RE-VMX",
+        "vmchtype": "mx240",
+        "vmtype": "0"
+    },
+    "name": "vmx",
+    "uuid": "83a66210-c446-4ff1-8fce-91f57f3c48f1"
+}
