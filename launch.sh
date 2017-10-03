@@ -120,16 +120,20 @@ init_tap_n9kv () {
 
 prepare_n9kv () {
     cp ${MASTER_IMG_N9KV} ${RUN_FOLDER}/n9kv-${VMID}.qcow2
-    cp -a template/n9kv template/n9kv-temp
-    sed -i "s/MGMT_IP/${IP}/g" template/n9kv-temp/NXOS_CONFIG.TXT
-    sed -i "s/NETMASK/${NETMASK}/g" template/n9kv-temp/NXOS_CONFIG.TXT
-    sed -i "s/GATEWAY/${GW}/g" template/n9kv-temp/NXOS_CONFIG.TXT
-    mkisofs -l -o  ${RUN_FOLDER}/n9kv-${VMID}-config.iso template/n9kv-temp/
+    if [ -d  template/n9kv-${VMID} ]; then
+        rm -rf  template/n9kv-${VMID}
+    fi
+    cp -a template/n9kv template/n9kv-${VMID}
+    sed -i "s/MGMT_IP/${IP}/g" template/n9kv-${VMID}/NXOS_CONFIG.TXT
+    sed -i "s/NETMASK/${NETMASK}/g" template/n9kv-${VMID}/NXOS_CONFIG.TXT
+    sed -i "s/GATEWAY/${GW}/g" template/n9kv-${VMID}/NXOS_CONFIG.TXT
+    mkisofs -l -o  ${RUN_FOLDER}/n9kv-${VMID}-config.iso template/n9kv-${VMID}/
 }
 
 
 launch_n9kv () {
     prepare_n9kv
+    sleep 2
     qemu-system-x86_64 -enable-kvm -hda ${RUN_FOLDER}/n9kv-${VMID}.qcow2 \
         -cdrom ${RUN_FOLDER}/n9kv-${VMID}-config.iso \
         -daemonize \
@@ -317,6 +321,7 @@ prepare_vmx () {
 
 launch_vmx() {
     prepare_vmx
+    sleep 2
     qemu-system-x86_64 -snapshot -enable-kvm -hda ${RUN_FOLDER}/vmx-${VMID}-re.qcow2 \
         -hdb ${RUN_FOLDER}/vmx-${VMID}-re-config.img \
         -machine pc-i440fx-xenial,accel=kvm,usb=off \
@@ -380,9 +385,11 @@ launch_vmx() {
 
 if [ "$VMTYPE" == "n9kv" ]; then
     init_tap_n9kv
+    sleep 2
     launch_n9kv
 elif [ "$VMTYPE" == "vmx" ]; then
     init_tap_vmx
+    sleep 2
     launch_vmx
 else
     echo "VM type $TYPE is not supported"

@@ -30,7 +30,7 @@ fi
 
 
 
-delete_tap_n9kv () {
+del_tap_n9kv () {
     tunctl -d tap${VMID}00
     tunctl -d tap${VMID}01
     tunctl -d tap${VMID}02
@@ -49,7 +49,7 @@ delete_tap_n9kv () {
 
 
 kill_n9kv () {
-    pid=`ps -ef | grep "n9kv-11" | grep qemu | grep -v grep | awk '{print $2}'`
+    pid=`ps -ef | grep "n9kv-${VMID}" | grep qemu | grep -v grep | awk '{print $2}'`
     kill -9 $pid
 }
 
@@ -93,10 +93,10 @@ del_tap_vmx() {
 
 
 kill_vmx() {
-    pid=`ps -ef | grep "vmx-11-re" | grep qemu | grep -v grep | awk '{print $2}'`
+    pid=`ps -ef | grep "vmx-${VMID}-re" | grep qemu | grep -v grep | awk '{print $2}'`
     kill -9 $pid
     
-    pid=`ps -ef | grep "vmx-11-fpc" | grep qemu | grep -v grep | awk '{print $2}'`
+    pid=`ps -ef | grep "vmx-${VMID}-fpc" | grep qemu | grep -v grep | awk '{print $2}'`
     kill -9 $pid
 }
 
