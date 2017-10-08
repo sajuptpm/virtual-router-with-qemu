@@ -3,6 +3,7 @@
 MASTER_IMG_N9KV="/data/kvm/nxosv/nxosv-final.7.0.3.I7.1.qcow2"
 MASTER_IMG_VMX_RE="/data/kvm/vmx/junos-vmx-x86-64-17.2-20170519.0.qcow2"
 MASTER_IMG_VMX_FPC="/data/kvm/vmx/fpc-17.1.img"
+MASTER_IMG_VEOS="/data/kvm/veos/vEOS-lab-4.19.0F-combined.qcow2"
 
 RUN_FOLDER="/data/kvm/run"
 
@@ -10,6 +11,7 @@ VMID="1"
 IP="192.168.1.199"
 GW="192.168.1.1"
 VMTYPE=""
+INIT=0
 
 while [[ $# > 0 ]]; do
     key="$1"
@@ -32,6 +34,10 @@ while [[ $# > 0 ]]; do
         ;;
         --gw)
         GW="$2"
+        shift # past argument
+        ;;
+        --init)
+        INIT=1
         shift # past argument
         ;;
         --bridge)
@@ -132,7 +138,9 @@ prepare_n9kv () {
 
 
 launch_n9kv () {
-    prepare_n9kv
+    if [ $INIT -ne 0 ]; then
+        prepare_n9kv
+    fi
     sleep 2
     qemu-system-x86_64 -enable-kvm -hda ${RUN_FOLDER}/n9kv-${VMID}.qcow2 \
         -cdrom ${RUN_FOLDER}/n9kv-${VMID}-config.iso \
@@ -142,6 +150,45 @@ launch_n9kv () {
         -serial telnet:0.0.0.0:410${VMID},nowait,server \
         -monitor tcp:0.0.0.0:420${VMID},server,nowait,nodelay \
         -m 8192M -smp 2 \
+        -netdev tap,id=t${VMID}00,ifname=tap${VMID}00,script=no,downscript=no -device e1000,mac=${intf_00},netdev=t${VMID}00,addr=4.0,multifunction=on,id=nic00 \
+        -netdev tap,id=t${VMID}01,ifname=tap${VMID}01,script=no,downscript=no -device e1000,mac=${intf_01},netdev=t${VMID}01,addr=4.1,multifunction=on,id=nic01 \
+        -netdev tap,id=t${VMID}02,ifname=tap${VMID}02,script=no,downscript=no -device e1000,mac=${intf_02},netdev=t${VMID}02,addr=4.2,multifunction=on,id=nic02 \
+        -netdev tap,id=t${VMID}03,ifname=tap${VMID}03,script=no,downscript=no -device e1000,mac=${intf_03},netdev=t${VMID}03,addr=5.0,multifunction=on,id=nic03 \
+        -netdev tap,id=t${VMID}04,ifname=tap${VMID}04,script=no,downscript=no -device e1000,mac=${intf_04},netdev=t${VMID}04,addr=5.1,multifunction=on,id=nic04 \
+        -netdev tap,id=t${VMID}05,ifname=tap${VMID}05,script=no,downscript=no -device e1000,mac=${intf_05},netdev=t${VMID}05,addr=5.2,multifunction=on,id=nic05 \
+        -netdev tap,id=t${VMID}06,ifname=tap${VMID}06,script=no,downscript=no -device e1000,mac=${intf_06},netdev=t${VMID}06,addr=5.3,multifunction=on,id=nic06 \
+        -netdev tap,id=t${VMID}07,ifname=tap${VMID}07,script=no,downscript=no -device e1000,mac=${intf_07},netdev=t${VMID}07,addr=6.0,multifunction=on,id=nic07 \
+        -netdev tap,id=t${VMID}08,ifname=tap${VMID}08,script=no,downscript=no -device e1000,mac=${intf_08},netdev=t${VMID}08,addr=6.1,multifunction=on,id=nic08 \
+        -netdev tap,id=t${VMID}09,ifname=tap${VMID}09,script=no,downscript=no -device e1000,mac=${intf_09},netdev=t${VMID}09,addr=6.2,multifunction=on,id=nic09 \
+        -netdev tap,id=t${VMID}10,ifname=tap${VMID}10,script=no,downscript=no -device e1000,mac=${intf_10},netdev=t${VMID}10,addr=6.3,multifunction=on,id=nic10 
+
+}
+
+
+prepare_veos () {
+    cp ${MASTER_IMG_VEOS} ${RUN_FOLDER}/veos-${VMID}.qcow2
+    if [ -d  template/veos-${VMID} ]; then
+        rm -rf  template/veos-${VMID}
+    fi
+    cp -a template/veos template/veos-${VMID}
+    sed -i "s/MGMT_IP/${IP}/g" template/veos-${VMID}/NXOS_CONFIG.TXT
+    sed -i "s/NETMASK/${NETMASK}/g" template/veos-${VMID}/NXOS_CONFIG.TXT
+    sed -i "s/GATEWAY/${GW}/g" template/veos-${VMID}/NXOS_CONFIG.TXT
+    mkisofs -l -o  ${RUN_FOLDER}/veos-${VMID}-config.iso template/veos-${VMID}/
+}
+
+launch_veos () {
+    if [ $INIT -ne 0 ]; then
+        prepare_veos
+    fi
+    sleep 2
+    qemu-system-x86_64 -enable-kvm -hda ${RUN_FOLDER}/veos-${VMID}.qcow2 \
+        -cdrom ${RUN_FOLDER}/veos-${VMID}-config.iso \
+        -daemonize \
+        -vnc 0.0.0.0:1${VMID} -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
+        -serial telnet:0.0.0.0:410${VMID},nowait,server \
+        -monitor tcp:0.0.0.0:420${VMID},server,nowait,nodelay \
+        -m 4192M -smp 2 \
         -netdev tap,id=t${VMID}00,ifname=tap${VMID}00,script=no,downscript=no -device e1000,mac=${intf_00},netdev=t${VMID}00,addr=4.0,multifunction=on,id=nic00 \
         -netdev tap,id=t${VMID}01,ifname=tap${VMID}01,script=no,downscript=no -device e1000,mac=${intf_01},netdev=t${VMID}01,addr=4.1,multifunction=on,id=nic01 \
         -netdev tap,id=t${VMID}02,ifname=tap${VMID}02,script=no,downscript=no -device e1000,mac=${intf_02},netdev=t${VMID}02,addr=4.2,multifunction=on,id=nic02 \
@@ -320,7 +367,9 @@ prepare_vmx () {
         #-smbios type=1,manufacturer="OpenStack Foundation",product=OpenStack Nova,version=13.0.0,serial=49434d53-0200-9037-2500-3790250074fa,uuid=ba03618d-ab6e-4296-9dfa-2c8977e2cfbb,family="Virtual Machine" \
 
 launch_vmx() {
-    prepare_vmx
+    if [ $INIT -ne 0 ]; then
+        prepare_vmx
+    fi
     sleep 2
     qemu-system-x86_64 -snapshot -enable-kvm -hda ${RUN_FOLDER}/vmx-${VMID}-re.qcow2 \
         -hdb ${RUN_FOLDER}/vmx-${VMID}-re-config.img \
@@ -387,6 +436,10 @@ if [ "$VMTYPE" == "n9kv" ]; then
     init_tap_n9kv
     sleep 2
     launch_n9kv
+elif [ "$VMTYPE" == "veos" ]; then
+    init_tap_n9kv
+    sleep 2
+    launch_veos
 elif [ "$VMTYPE" == "vmx" ]; then
     init_tap_vmx
     sleep 2
