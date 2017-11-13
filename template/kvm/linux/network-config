@@ -1,0 +1,15 @@
+---
+version: 1
+config:
+- type: physical
+  name: ens4
+  subnets:
+  - type: static
+    address: MGMT_IP
+    netmask: NETMASK
+    routes:
+    - network: 0.0.0.0
+      netmask: 0.0.0.0
+      gateway: GATEWAY
+- type: nameserver
+  address: [8.8.8.8, 8.8.4.4]

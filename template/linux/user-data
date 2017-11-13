@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "MGMT_IP linux" >> /etc/hosts
+
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+/etc/init.d/ssh restart
+echo "ubuntu:ubuntu" | chpasswd
+
+

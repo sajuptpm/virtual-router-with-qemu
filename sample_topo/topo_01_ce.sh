@@ -1,56 +1,41 @@
 #!/bin/bash
 
-
-##
-## core links - begin
-##
-brctl addbr net-11-21-1
-brctl addif net-11-21-1 tap1110
-brctl addif net-11-21-1 tap2101
-ifconfig net-11-21-1 up
-
-brctl addbr net-11-22-1
-brctl addif net-11-22-1 tap1111
-brctl addif net-11-22-1 tap2201
-ifconfig net-11-22-1 up
+## vmx logical-system ce trunk to leaf-22
+brctl addbr net-11-22-2
+brctl addif net-11-22-2 tap1119
+brctl addif net-11-22-2 tap2209
+ifconfig net-11-22-2 up
 
 
-brctl addbr net-11-23-1
-brctl addif net-11-23-1 tap1112
-brctl addif net-11-23-1 tap2301
-ifconfig net-11-23-1 up
+#ce of n9kv-21
+../create_ce.sh ce-21-100 10.21.100.121/24 10.21.100.1 tap2104
+../create_ce.sh ce-21-121 10.21.121.2/24 10.21.121.1 tap2105
+../create_ce.sh ce-21-221 10.21.221.2/24 10.21.221.1 tap2106
 
 
-brctl addbr net-21-22-1
-brctl addif net-21-22-1 tap2102
-brctl addif net-21-22-1 tap2202
-ifconfig net-21-22-1 up
+#ce of n9kv-23
+../create_ce.sh ce-23-200 10.23.200.123/24 10.23.200.1 tap2307
+../create_ce.sh ce-23-123 10.23.123.2/24 10.23.123.1 tap2305
+../create_ce.sh ce-23-223 10.23.223.2/24 10.23.223.1 tap2306
 
-brctl addbr net-11-24-1
-brctl addif net-11-24-1 tap1113
-brctl addif net-11-24-1 tap2401
-ifconfig net-11-24-1 up
 
-brctl addbr net-11-25-1
-brctl addif net-11-25-1 tap1114
-brctl addif net-11-25-1 tap2501
-ifconfig net-11-25-1 up
+#ce of veos-24
+../create_ce.sh ce-24-100 10.21.100.124/24 10.21.100.1 tap2402
+../create_ce.sh ce-24-124 10.24.124.2/24 10.24.124.1 tap2403
 
-#brctl addbr net-11-12-1
-#brctl addif net-11-12-1 tap1115
-#brctl addif net-11-12-1 tap1200
-#ifconfig net-11-12-1 up
+#ce of veos-25
+../create_ce.sh ce-25-100 10.21.100.125/24 10.21.100.1 tap2502
+../create_ce.sh ce-25-125 10.25.125.2/24 10.25.125.1 tap2503
+../create_ce.sh ce-25-200 10.23.200.125/24 10.23.200.1 tap2504
 
-brctl addbr net-11-26-1
-brctl addif net-11-26-1 tap1115
-brctl addif net-11-26-1 tap2610
-ifconfig net-11-26-1 up
+#ce of vqfx-26
+../create_ce.sh ce-26-100 10.21.100.126/24 10.21.100.1 tap2612
+../create_ce.sh ce-26-126 10.26.126.2/24 10.26.126.1 tap2613
 
-brctl addbr net-11-27-1
-brctl addif net-11-27-1 tap1118
-brctl addif net-11-27-1 tap2701
-ifconfig net-11-27-1 up
-## core links - end
+#ce of vqfx-28
+../create_ce.sh ce-28-100 10.21.100.128/24 10.21.100.1 tap2812
+../create_ce.sh ce-28-128 10.28.128.2/24 10.28.128.1 tap2813
+
 
 
 ##
@@ -382,12 +367,6 @@ ifconfig veth_27_100 up
 
 
 ###
-## vmx logical-system ce trunk to leaf-22
-##
-brctl addbr net-11-22-2
-brctl addif net-11-22-2 tap1119
-brctl addif net-11-22-2 tap2209
-ifconfig net-11-22-2 up
 ###
 
 

@@ -1,0 +1,15 @@
+#cloud-config
+password: ubuntu
+chpasswd: { expire: False }
+instance-id: my-instance-id
+local-hostname: linux
+hostname: linux
+public-keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXEpBskfd4iyOJFs5jbWjCQf1WHKMlwA6cAmMdd9NimGP3OOleDzn/XzRGJ9BMEq/4tzxmvn8lEmT1E4KZf1boYOjtuTpOun3CyVOWdne6QXo06/pcW4NgT1i9ISAPk9a6qBcyLDFjatmn8bHOhKfziD3B+bU0mmmlKUprNTV7DR2ScJJ3JSukqgBZBNZ512kCmvRaAXg9Fl7vUa3GALkgKuhzu+3pN93EX0J+CRFM4yTe+CGsmnYALUMYQazYUgSfxqzwwYskMRrdEwREoGQNBolivtVLfDLT9pyc49zUS58FFeBYMHvu6ETwGf9ocZXfZiwTNI8kgpKvh4sOatBr rendo@atlantis
+ssh_pwauth: True
+network-interfaces: |
+  iface ens4 inet static
+  address MGMT_IP
+  netmask NETMASK
+  gateway GATEWAY
+  dns-nameservers 8.8.8.8
