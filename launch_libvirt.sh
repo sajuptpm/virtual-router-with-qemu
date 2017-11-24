@@ -864,32 +864,46 @@ launch_linux () {
 
 if [ "$VMTYPE" == "n9kv" ]; then
     init_tap_n9kv
-    sleep 2
-    launch_n9kv
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_n9kv
+    fi
 elif [ "$VMTYPE" == "veos" ]; then
     init_tap_n9kv
-    sleep 2
-    launch_veos
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_veos
+    fi
 elif [ "$VMTYPE" == "xr9kv" ]; then
     init_tap_n9kv
-    sleep 2
-    launch_xr9kv
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_xr9kv
+    fi
 elif [ "$VMTYPE" == "cumulus" ]; then
     init_tap_n9kv
-    sleep 2
-    launch_cumulus
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_cumulus
+    fi
 elif [ "$VMTYPE" == "vmx" ]; then
     init_tap_vmx
-    sleep 2
-    launch_vmx
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_vmx
+    fi
 elif [ "$VMTYPE" == "vqfx" ]; then
     init_tap_vqfx
-    sleep 2
-    launch_vqfx
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_vqfx
+    fi
 elif [ "$VMTYPE" == "linux" ]; then
     init_tap_linux
-    sleep 2
-    launch_linux
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_linux
+    fi
 else
     echo "VM type $TYPE is not supported"
 fi
