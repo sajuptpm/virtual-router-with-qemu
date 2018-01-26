@@ -55,6 +55,12 @@ brctl addbr net-11-28-1
 brctl addif net-11-28-1 tap1117
 brctl addif net-11-28-1 tap2810
 ifconfig net-11-28-1 up
+
+
+brctl addbr net-11-29-1
+brctl addif net-11-29-1 tap1120
+brctl addif net-11-29-1 tap2902
+ifconfig net-11-29-1 up
 ## core links - end
 
 

@@ -1,12 +1,15 @@
 #!/bin/bash
 
 MASTER_IMG_N9KV="/data/kvm/nxosv/nxosv-final.7.0.3.I7.1.qcow2"
-MASTER_IMG_VMX_RE="/data/kvm/vmx/junos-vmx-x86-64-17.2-20170519.0.qcow2"
-MASTER_IMG_VMX_FPC="/data/kvm/vmx/fpc-17.1.img"
+#MASTER_IMG_VMX_RE="/data/kvm/vmx/junos-vmx-x86-64-17.2-20170519.0.qcow2"
+#MASTER_IMG_VMX_FPC="/data/kvm/vmx/fpc-17.1.img"
+MASTER_IMG_VMX_RE="/data/kvm/vmx/junos-vmx-x86-64-17.4R1.16.qcow2"
+MASTER_IMG_VMX_FPC="/data/kvm/vmx/vFPC-20171213.img"
 MASTER_IMG_VEOS="/data/kvm/veos/vEOS-lab-4.19.0F-combined.qcow2"
 MASTER_IMG_VQFX_FPC="/data/kvm/vqfx/vqfx10k-pfe-20160609-2.qcow2"
 MASTER_IMG_VQFX_RE="/data/kvm/vqfx/jinstall-vqfx-10-f-17.3R1.7.img"
 MASTER_IMG_CUMULUS="/data/kvm/cumulus-linux-3.3.2-vx-amd64.qcow2"
+MASTER_IMG_XRV="/data/kvm/iosxrv-k9-demo-6.1.3.qcow2"
 MASTER_IMG_XR9KV="/data/kvm/xrv9k-fullk9-x-6.0.1.qcow2"
 MASTER_IMG_LINUX_REMOTE="http://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.tar.gz"
 MASTER_IMG_LINUX="/data/kvm/xenial-server-cloudimg-amd64-disk1.img"
@@ -154,29 +157,81 @@ launch_n9kv () {
     cat template/kvm/footer.xml >> $xml
     virsh define $xml
     virsh start ${VMNAME}
-
-
-#    qemu-system-x86_64 -enable-kvm -hda ${RUN_FOLDER}/n9kv-${VMID}.qcow2 \
-#        -cdrom ${RUN_FOLDER}/n9kv-${VMID}-config.iso \
-#        -daemonize \
-#        -vnc 0.0.0.0:1${VMID} -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
-#        -bios /usr/share/ovmf/OVMF.fd \
-#        -serial telnet:0.0.0.0:410${VMID},nowait,server \
-#        -monitor tcp:0.0.0.0:420${VMID},server,nowait,nodelay \
-#        -m 8192M -smp 2 \
-#        -netdev tap,id=t${VMID}00,ifname=tap${VMID}00,script=no,downscript=no -device e1000,mac=${intf_00},netdev=t${VMID}00,addr=4.0,multifunction=on,id=nic00 \
-#        -netdev tap,id=t${VMID}01,ifname=tap${VMID}01,script=no,downscript=no -device e1000,mac=${intf_01},netdev=t${VMID}01,addr=4.1,multifunction=on,id=nic01 \
-#        -netdev tap,id=t${VMID}02,ifname=tap${VMID}02,script=no,downscript=no -device e1000,mac=${intf_02},netdev=t${VMID}02,addr=4.2,multifunction=on,id=nic02 \
-#        -netdev tap,id=t${VMID}03,ifname=tap${VMID}03,script=no,downscript=no -device e1000,mac=${intf_03},netdev=t${VMID}03,addr=5.0,multifunction=on,id=nic03 \
-#        -netdev tap,id=t${VMID}04,ifname=tap${VMID}04,script=no,downscript=no -device e1000,mac=${intf_04},netdev=t${VMID}04,addr=5.1,multifunction=on,id=nic04 \
-#        -netdev tap,id=t${VMID}05,ifname=tap${VMID}05,script=no,downscript=no -device e1000,mac=${intf_05},netdev=t${VMID}05,addr=5.2,multifunction=on,id=nic05 \
-#        -netdev tap,id=t${VMID}06,ifname=tap${VMID}06,script=no,downscript=no -device e1000,mac=${intf_06},netdev=t${VMID}06,addr=5.3,multifunction=on,id=nic06 \
-#        -netdev tap,id=t${VMID}07,ifname=tap${VMID}07,script=no,downscript=no -device e1000,mac=${intf_07},netdev=t${VMID}07,addr=6.0,multifunction=on,id=nic07 \
-#        -netdev tap,id=t${VMID}08,ifname=tap${VMID}08,script=no,downscript=no -device e1000,mac=${intf_08},netdev=t${VMID}08,addr=6.1,multifunction=on,id=nic08 \
-#        -netdev tap,id=t${VMID}09,ifname=tap${VMID}09,script=no,downscript=no -device e1000,mac=${intf_09},netdev=t${VMID}09,addr=6.2,multifunction=on,id=nic09 \
-#        -netdev tap,id=t${VMID}10,ifname=tap${VMID}10,script=no,downscript=no -device e1000,mac=${intf_10},netdev=t${VMID}10,addr=6.3,multifunction=on,id=nic10 
-
 }
+
+
+prepare_xrv () {
+    cp ${MASTER_IMG_XRV} ${RUN_FOLDER}/xrv-${VMID}.qcow2
+    if [ -d  template/xrv-${VMID} ]; then
+        rm -rf  template/xrv-${VMID}
+    fi
+    cp -a template/xrv template/xrv-${VMID}
+    sed -i "s/MGMT_IP/${IP}/g" template/xrv-${VMID}/iosxr_config.txt
+    sed -i "s/NETMASK/${NETMASK}/g" template/xrv-${VMID}/iosxr_config.txt
+    sed -i "s/GATEWAY/${GW}/g" template/xrv-${VMID}/iosxr_config.txt
+    mkisofs -l -o  ${RUN_FOLDER}/xrv-${VMID}-config.iso template/xrv-${VMID}/
+}
+
+
+launch_xrv () {
+    if [ $INIT -ne 0 ]; then
+        prepare_xrv
+    fi
+    sleep 2
+    VMNAME="xrv-${VMID}"
+    xml="${RUN_FOLDER}/${VMNAME}.xml"
+    cp template/kvm/header.xml $xml
+
+    sed -i "s/XNAME/${VMNAME}/g" ${xml}
+    sed -i "s/VMID/${VMID}/g" ${xml}
+    sed -i "s/XCPU/2/g" ${xml}
+    sed -i "s/XRAM/8192000/g" ${xml}
+    sed -i "s/VMID/${VMID}/g" ${xml}
+    sed -i "s/XSERIAL/400${VMID}/g" ${xml}
+
+    echo "    <disk type='file' device='disk'>" >> ${xml}
+    echo "      <driver name='qemu' type='qcow2' cache='directsync'/>" >> ${xml}
+    echo "      <source file='${RUN_FOLDER}/${VMNAME}.qcow2'/>" >> ${xml}
+    echo "      <backingStore/>" >> ${xml}
+    echo "      <target dev='hda' bus='ide'/>" >> ${xml}
+    echo "      <alias name='ide0-0-0'/>" >> ${xml}
+    echo "      <address type='drive' controller='0' bus='0' target='0' unit='0'/>" >> ${xml}
+    echo "    </disk>" >> ${xml}
+
+    echo "    <disk type='file' device='cdrom'>" >> ${xml}
+    echo "      <driver name='qemu' type='raw'/>" >> ${xml}
+    echo "      <source file='${RUN_FOLDER}/xrv-${VMID}-config.iso'/>" >> ${xml}
+    echo "      <target dev='hdc' bus='ide'/>" >> ${xml}
+    echo "      <readonly/>" >> ${xml}
+    echo "      <address type='drive' controller='0' bus='1' target='0' unit='0'/>" >> ${xml}
+    echo "    </disk>" >> ${xml}
+
+    for j in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+        if [ $j -le 9 ]; then
+            i="0${j}" 
+        else
+            i=$j
+        fi
+        slot=$((j + 4))
+        echo "    <interface type='ethernet'>" >> ${xml}
+        echo "      <mac address='52:55:01:00:${VMID}:${i}'/>" >> ${xml}
+        echo "      <script path=''/>" >> ${xml}
+        echo "      <target dev='tap${VMID}${i}'/>" >> ${xml}
+        echo "      <model type='e1000'/>" >> ${xml}
+        echo "      <alias name='nic${i}'/>" >> ${xml}
+        echo "      <address type='pci' domain='0x0000' bus='0x00' slot='${slot}' function='0x0'/>" >> ${xml}
+        echo "    </interface>" >> ${xml}
+    done
+
+    cat template/kvm/footer.xml >> $xml
+    virsh define $xml
+    virsh start ${VMNAME}
+}
+
+
+
+
+
 
 
 prepare_veos () {
@@ -414,8 +469,8 @@ init_tap_vmx() {
 
 
 prepare_vmx () {
-    #cp ${MASTER_IMG_VMX_RE} ${RUN_FOLDER}/vmx-${VMID}-re.qcow2
-    #cp ${MASTER_IMG_VMX_FPC} ${RUN_FOLDER}/vmx-${VMID}-fpc.img
+    cp ${MASTER_IMG_VMX_RE} ${RUN_FOLDER}/vmx-${VMID}-re.qcow2
+    cp ${MASTER_IMG_VMX_FPC} ${RUN_FOLDER}/vmx-${VMID}-fpc.img
     mkdir -p /mnt/vmx-${VMID}
   
     if [ -d template/vmx/meta_data.${VMID} ]; then
@@ -785,6 +840,7 @@ init_tap_linux () {
 
 prepare_linux () {
     cp ${MASTER_IMG_LINUX} ${RUN_FOLDER}/linux-${VMID}.img
+    qemu-img resize ${RUN_FOLDER}/linux-${VMID}.img 40G
     if [ -d  template/linux-${VMID} ]; then
         rm -rf  template/linux-${VMID}
     fi
@@ -867,6 +923,12 @@ if [ "$VMTYPE" == "n9kv" ]; then
     if [ $INIT -ne 0 ]; then
         sleep 2
         launch_n9kv
+    fi
+elif [ "$VMTYPE" == "xrv" ]; then
+    init_tap_n9kv
+    if [ $INIT -ne 0 ]; then
+        sleep 2
+        launch_xrv
     fi
 elif [ "$VMTYPE" == "veos" ]; then
     init_tap_n9kv

@@ -126,6 +126,11 @@ system {
         }
     }
 }
+chassis {
+    fpc 0 {
+        lite-mode;
+    }
+}
 routing-options {
     static {
         route 0.0.0.0/0 next-hop %gateway%;

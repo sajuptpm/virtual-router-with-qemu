@@ -41,6 +41,17 @@ ifconfig net-11-22-2 up
 ../create_ce.sh ce-28-128 10.28.128.2/24 10.28.128.1 tap2813
 
 
+#ce of linux-93 FRR
+../create_ce.sh ce-93-100 10.21.100.193/24 10.21.100.1 tap9302
+../create_ce.sh ce-93-193 10.93.193.2/24 10.93.193.1 tap9303
+
+#ce of linux-94 FRR
+../create_ce.sh ce-94-100 10.21.100.194/24 10.21.100.1 tap9402
+../create_ce.sh ce-94-194 10.94.194.2/24 10.93.193.1 tap9403
+
+
+exit
+
 
 ##
 ## ce 101 non-irb begin
